@@ -1,0 +1,17 @@
+
+https://nx.dev/recipes/adopting-nx/adding-to-monorepo
+
+npx nx@latest init
+
+npx nx g @nx/react:app url/client
+
+npx nx serve url-client
+
+npx nx g @nx/express:app url/server
+
+npx nx serve url-server
+
+npx nx run-many -t serve -p url-client url-server
+
+
+taskkill /pid 21560 /T /F
