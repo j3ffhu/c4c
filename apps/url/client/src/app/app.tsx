@@ -10,18 +10,16 @@ import {
   Link,
 } from '@chakra-ui/react';
 
-type Shortened = {
-  original: string;
-  short: string;
-};
+ import { ShortenUrlForm } from './types';
+import UrlList from './url-list';
+import { Shortened } from './types';
+
 
 export function App() {
   const [urls, setUrls] = useState<Array<Shortened>>([]);
-  const [inputUrl, setInputUrl] = useState<string>('');
-  const onSubmit = useCallback(
-    async (event: FormEvent) => {
-      event.preventDefault();
 
+  const requestShortUrl = useCallback(
+    async (inputUrl: string) => {
       const response = await axios.post(`http://localhost:3333/api/shorten`, {
         original: inputUrl,
       });
@@ -29,41 +27,16 @@ export function App() {
       const newUrl = response.data as Shortened;
 
       setUrls([newUrl, ...urls]);
-      setInputUrl('');
     },
-    [urls, setUrls, inputUrl, setInputUrl]
+    [urls, setUrls]
   );
 
   return (
     <Container maxWidth="4xl" marginBlock={10} textAlign="center">
       <Text fontSize="4xl">My URL Shortener</Text>
-      <form onSubmit={onSubmit}>
-        <Input
-          size="lg"
-          marginBlock={4}
-          value={inputUrl}
-          onChange={(e) => {
-            setInputUrl(e.target.value);
-          }}
-          placeholder="www.my-super-long-url-here.com/12345"
-        />
-        <Button type="submit" colorScheme="teal" size="lg">
-          Generate
-        </Button>
-      </form>
-
-      <UnorderedList textAlign="left">
-        {urls.map((u) => (
-          <ListItem>
-            <Link href={u.short} color="teal.500">
-              {u.short}
-            </Link>{' '}
-            - {u.original}
-          </ListItem>
-        ))}
-      </UnorderedList>
+      <ShortenUrlForm requestShortUrl={requestShortUrl} />
+      <UrlList urls={urls} />
     </Container>
   );
 }
-
 export default App;
